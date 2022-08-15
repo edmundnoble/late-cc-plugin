@@ -37,18 +37,12 @@ import GHC.Core
 plugin :: Plugin
 plugin = defaultPlugin {
   installCoreToDos = install,
-  driverPlugin = disableAutoProf,
   pluginRecompile = purePlugin
   }
 
 install :: [CommandLineOption] -> [CoreToDo] -> CoreM [CoreToDo]
 install _ todo = do
   return (todo ++ [lateCCPass])
-
-disableAutoProf :: [CommandLineOption] -> HscEnv -> IO HscEnv
-disableAutoProf _opts hscenv = do
-  let dflags = hsc_dflags hscenv
-  return $ hscenv { hsc_dflags = dflags { profAuto = NoProfAuto } }
 
 lateCCPass :: CoreToDo
 lateCCPass = CoreDoPluginPass "late-cc-plugin" addLateCostCentres
